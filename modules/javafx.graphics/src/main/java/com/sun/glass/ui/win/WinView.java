@@ -24,12 +24,9 @@
  */
 package com.sun.glass.ui.win;
 
-import com.sun.glass.ui.Application;
+import com.sun.glass.ui.MoveResizeHelper;
 import com.sun.glass.ui.Pixels;
 import com.sun.glass.ui.View;
-import com.sun.glass.ui.Window;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 import java.util.Map;
 
@@ -99,6 +96,12 @@ final class WinView extends View {
         // When moving to a screen with different DPI settings, its location needs
         // to be recalculated.
         updateLocation();
+    }
+
+    @Override
+    protected MoveResizeHelper getMoveResizeHelper() {
+        // We don't use a move-resize helper on Windows, but handle the WM_NCHITTEST message instead.
+        return null;
     }
 }
 

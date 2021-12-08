@@ -532,6 +532,39 @@ public class Stage extends Window {
         return modality;
     }
 
+    private WindowRegionClassifier regionClassifier;
+
+    /**
+     * Specifies the {@code WindowRegionClassifier} for this stage.
+     * Stages that use the {@link StageStyle#UNDECORATED_INTERACTIVE} style should also provide a
+     * window region classifier that returns the {@link WindowRegion} for a given coordinate.
+     * <p>
+     * The JavaFX windowing subsystem may use this information to enable platform-specific window
+     * interactions or animations when the user interacts with each of the various window regions.
+     * For example, clicking and dragging the {@link WindowRegion#TITLE} region may move the window,
+     * while double-clicking may maximize the window or restore it from its maximized state.
+     *
+     * @param classifier the window region classifier
+     * @since 18
+     */
+    public final void initRegionClassifier(WindowRegionClassifier classifier) {
+        if (hasBeenVisible) {
+            throw new IllegalStateException("Cannot set classifier once stage has been set visible");
+        }
+
+        this.regionClassifier = classifier;
+    }
+
+    /**
+     * Retrieves the {@code WindowRegionClassifier} for this stage.
+     *
+     * @return the window region classifier
+     * @since 18
+     */
+    public final WindowRegionClassifier getRegionClassifier() {
+        return regionClassifier;
+    }
+
     private Window owner = null;
 
     /**
@@ -1153,7 +1186,7 @@ public class Stage extends Window {
                 }
             }
             setPeer(toolkit.createTKStage(this, isSecurityDialog(),
-                    stageStyle, isPrimary(), getModality(), tkStage, rtl, acc));
+                    stageStyle, isPrimary(), getModality(), getRegionClassifier(), tkStage, rtl, acc));
             getPeer().setMinimumSize((int) Math.ceil(getMinWidth()),
                     (int) Math.ceil(getMinHeight()));
             getPeer().setMaximumSize((int) Math.floor(getMaxWidth()),

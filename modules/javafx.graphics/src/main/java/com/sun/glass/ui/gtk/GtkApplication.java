@@ -40,6 +40,7 @@ import com.sun.javafx.util.Logging;
 import com.sun.glass.utils.NativeLibLoader;
 import com.sun.prism.impl.PrismSettings;
 import com.sun.javafx.logging.PlatformLogger;
+import javafx.stage.WindowRegionClassifier;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -378,8 +379,8 @@ final class GtkApplication extends Application implements
     }
 
     @Override
-    public Window createWindow(Window owner, Screen screen, int styleMask) {
-        return new GtkWindow(owner, screen, styleMask);
+    public Window createWindow(Window owner, Screen screen, WindowRegionClassifier classifier, int styleMask) {
+        return new GtkWindow(owner, screen, classifier, styleMask);
     }
 
     @Override

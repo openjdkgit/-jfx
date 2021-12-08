@@ -2885,6 +2885,21 @@ public class Scene implements EventTarget {
         public Accessible getSceneAccessible() {
             return getAccessible();
         }
+
+        private final PickRay pickRay = new PickRay();
+
+        @Override
+        public Node pickNode(double x, double y) {
+            Node root = Scene.this.getRoot();
+            if (root != null) {
+                pickRay.set(x, y, 1, 0, Double.POSITIVE_INFINITY);
+                var pickResultChooser = new PickResultChooser();
+                root.pickNode(pickRay, pickResultChooser);
+                return pickResultChooser.getIntersectedNode();
+            }
+
+            return null;
+        }
     }
 
     private class ScenePeerPaintListener implements TKScenePaintListener {

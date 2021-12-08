@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -105,6 +105,161 @@ jint GetModifiers()
     }
 
     return modifiers;
+}
+
+RECT utils::GetScreenSpaceClipRect(HWND hwnd)
+{
+    WINDOWPLACEMENT placement = {};
+    MONITORINFO monitorInfo = {};
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    LONG_PTR userData = ::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+    if (userData != NULL
+            && ((WndUserData*)userData)->interactive
+            && SUCCEEDED(::GetWindowPlacement(hwnd, &placement))
+            && placement.showCmd == SW_SHOWMAXIMIZED
+            && GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), &monitorInfo)) {
+        return monitorInfo.rcWork;
+    }
+
+    RECT rect;
+    POINT p = {0, 0};
+    ::GetClientRect(hwnd, &rect);
+    ::MapWindowPoints(hwnd, NULL, (POINT*)&rect, 2);
+    return rect;
+}
+
+RECT utils::GetScreenSpaceWindowRect(HWND hwnd)
+{
+    WINDOWPLACEMENT placement = {};
+    MONITORINFO monitorInfo = {};
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    LONG_PTR userData = ::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+    if (userData != NULL
+            && ((WndUserData*)userData)->interactive
+            && SUCCEEDED(::GetWindowPlacement(hwnd, &placement))
+            && placement.showCmd == SW_SHOWMAXIMIZED
+            && GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), &monitorInfo)) {
+        return monitorInfo.rcWork;
+    }
+
+    RECT rect;
+    ::GetWindowRect(hwnd, &rect);
+    return rect;
+}
+
+BOOL utils::GetClipRect(HWND hwnd, LPRECT rect)
+{
+    if (rect == NULL) {
+        return FALSE;
+    }
+
+    WINDOWPLACEMENT placement = {};
+    MONITORINFO monitorInfo = {};
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    LONG_PTR userData = ::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+    if (userData != NULL
+            && ((WndUserData*)userData)->interactive
+            && SUCCEEDED(::GetWindowPlacement(hwnd, &placement))
+            && placement.showCmd == SW_SHOWMAXIMIZED
+            && GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), &monitorInfo)) {
+        RECT r = monitorInfo.rcWork;
+        *rect = { 0, 0, r.right - r.left, r.bottom - r.top };
+        return TRUE;
+    }
+
+    return ::GetClientRect(hwnd, rect);
+}
+
+BOOL utils::ScreenToClip(HWND hwnd, LPPOINT point)
+{
+    if (point == NULL) {
+        return FALSE;
+    }
+
+    WINDOWPLACEMENT placement = {};
+    MONITORINFO monitorInfo = {};
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    LONG_PTR userData = ::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+    if (userData != NULL
+            && ((WndUserData*)userData)->interactive
+            && SUCCEEDED(::GetWindowPlacement(hwnd, &placement))
+            && placement.showCmd == SW_SHOWMAXIMIZED) {
+        RECT rect;
+        if (::GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), &monitorInfo)
+                && ::GetWindowRect(hwnd, &rect)
+                && ::ScreenToClient(hwnd, point)) {
+            point->x -= monitorInfo.rcWork.left - rect.left;
+            point->y -= monitorInfo.rcWork.top - rect.top;
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
+    return ::ScreenToClient(hwnd, point);
+}
+
+BOOL utils::ClipToScreen(HWND hwnd, LPPOINT point)
+{
+    if (point == NULL) {
+        return FALSE;
+    }
+
+    WINDOWPLACEMENT placement = {};
+    MONITORINFO monitorInfo = {};
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    LONG_PTR userData = ::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+    if (userData != NULL
+            && ((WndUserData*)userData)->interactive
+            && SUCCEEDED(::GetWindowPlacement(hwnd, &placement))
+            && placement.showCmd == SW_SHOWMAXIMIZED) {
+        RECT rect;
+        if (::GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), &monitorInfo)
+                && ::GetWindowRect(hwnd, &rect)
+                && ::ClientToScreen(hwnd, point)) {
+            point->x += monitorInfo.rcWork.left - rect.left;
+            point->y += monitorInfo.rcWork.top - rect.top;
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
+    return ::ClientToScreen(hwnd, point);
+}
+
+BOOL utils::ClientToClip(HWND hwnd, LPPOINT point)
+{
+    if (point == NULL) {
+        return FALSE;
+    }
+
+    WINDOWPLACEMENT placement = {};
+    MONITORINFO monitorInfo = {};
+    monitorInfo.cbSize = sizeof(MONITORINFO);
+    LONG_PTR userData = ::GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+    if (userData != NULL
+            && ((WndUserData*)userData)->interactive
+            && SUCCEEDED(::GetWindowPlacement(hwnd, &placement))
+            && placement.showCmd == SW_SHOWMAXIMIZED) {
+        RECT rect;
+        if (::GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST), &monitorInfo)
+                && ::GetWindowRect(hwnd, &rect)) {
+            point->x -= monitorInfo.rcWork.left - rect.left;
+            point->y -= monitorInfo.rcWork.top - rect.top;
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
+    return TRUE;
 }
 
 extern "C" {

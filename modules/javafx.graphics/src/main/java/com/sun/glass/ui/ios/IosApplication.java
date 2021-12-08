@@ -28,6 +28,7 @@ package com.sun.glass.ui.ios;
 import com.sun.glass.ui.*;
 import com.sun.glass.ui.CommonDialogs.ExtensionFilter;
 import com.sun.glass.ui.CommonDialogs.FileChooserResult;
+import javafx.stage.WindowRegionClassifier;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -75,8 +76,8 @@ public final class IosApplication extends Application {
      * @inheritDoc
      */
     @Override
-    public Window createWindow(Window owner, Screen screen, int styleMask) {
-        return new IosWindow(owner, screen, styleMask);
+    public Window createWindow(Window owner, Screen screen, WindowRegionClassifier classifier, int styleMask) {
+        return new IosWindow(owner, screen, classifier, styleMask);
     }
 
     /**

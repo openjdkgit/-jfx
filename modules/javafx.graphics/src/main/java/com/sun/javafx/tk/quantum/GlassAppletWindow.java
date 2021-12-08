@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -53,7 +53,7 @@ class GlassAppletWindow implements AppletWindow {
             if (serverName != null) {
                 throw new RuntimeException("GlassAppletWindow constructor used incorrectly.");
             }
-            glassWindow = Application.GetApplication().createWindow(null, Window.NORMAL);
+            glassWindow = Application.GetApplication().createWindow(null, null, Window.NORMAL);
         } else {
             this.serverName = serverName;
             glassWindow = Application.GetApplication().createWindow(nativeParent);

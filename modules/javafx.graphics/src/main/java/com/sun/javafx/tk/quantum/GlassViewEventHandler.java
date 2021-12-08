@@ -48,6 +48,7 @@ import javafx.collections.ObservableList;
 
 import javafx.event.EventType;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.InputMethodHighlight;
 import javafx.scene.input.InputMethodTextRun;
@@ -1390,5 +1391,17 @@ class GlassViewEventHandler extends View.EventHandler {
             return scene.sceneListener.getSceneAccessible();
         }
         return null;
+    }
+
+    @Override
+    public Node pickNode(double x, double y) {
+        return QuantumToolkit.runWithoutRenderLock(() -> {
+            return AccessController.doPrivileged((PrivilegedAction<Node>) () -> {
+                if (scene.sceneListener != null) {
+                    return scene.sceneListener.pickNode(x, y);
+                }
+                return null;
+            });
+        });
     }
 }

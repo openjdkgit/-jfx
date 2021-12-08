@@ -36,6 +36,7 @@ import com.sun.glass.ui.Timer;
 import com.sun.glass.ui.View;
 import com.sun.glass.ui.Window;
 import javafx.collections.SetChangeListener;
+import javafx.stage.WindowRegionClassifier;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -151,8 +152,8 @@ public final class MonocleApplication extends Application {
     }
 
     @Override
-    public Window createWindow(Window owner, Screen screen, int styleMask) {
-        return new MonocleWindow(owner, screen, styleMask);
+    public Window createWindow(Window owner, Screen screen, WindowRegionClassifier classifier, int styleMask) {
+        return new MonocleWindow(owner, screen, classifier, styleMask);
     }
 
     @Override
