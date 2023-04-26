@@ -210,8 +210,6 @@ public class Region extends Parent {
 
     static Vec2d TEMP_VEC2D = new Vec2d();
 
-    private static final double EPSILON = 1e-14;
-
     /* *************************************************************************
      *                                                                         *
      * Static convenience methods for layout                                   *
@@ -304,7 +302,9 @@ public class Region extends Parent {
      * @return value floored with scale
      */
     private static double scaledFloor(double value, double scale) {
-        return Math.floor(value * scale + EPSILON) / scale;
+        double d = value * scale;
+
+        return Math.floor(d + Math.ulp(d)) / scale;
     }
 
     /**
@@ -318,7 +318,9 @@ public class Region extends Parent {
      * @return value ceiled with scale
      */
     private static double scaledCeil(double value, double scale) {
-        return Math.ceil(value * scale - EPSILON) / scale;
+        double d = value * scale;
+
+        return Math.ceil(d - Math.ulp(d)) / scale;
     }
 
     /**
@@ -393,15 +395,13 @@ public class Region extends Parent {
      * @return value either as passed, or floored or ceiled with scale, based on snapToPixel
      */
     private double snapPortionX(double value, boolean snapToPixel) {
-        if (!snapToPixel || value == 0) return value;
-        double s = getSnapScaleX();
-        value *= s;
-        if (value > 0) {
-            value = Math.max(1, Math.floor(value + EPSILON));
-        } else {
-            value = Math.min(-1, Math.ceil(value - EPSILON));
+        if (!snapToPixel || value == 0) {
+            return value;
         }
-        return value / s;
+
+        double s = getSnapScaleX();
+
+        return value > 0 ? scaledFloor(value, s) : scaledCeil(value, s);
     }
 
     /**
@@ -415,15 +415,13 @@ public class Region extends Parent {
      * @return value either as passed, or floored or ceiled with scale, based on snapToPixel
      */
     private double snapPortionY(double value, boolean snapToPixel) {
-        if (!snapToPixel || value == 0) return value;
-        double s = getSnapScaleY();
-        value *= s;
-        if (value > 0) {
-            value = Math.max(1, Math.floor(value + EPSILON));
-        } else {
-            value = Math.min(-1, Math.ceil(value - EPSILON));
+        if (!snapToPixel || value == 0) {
+            return value;
         }
-        return value / s;
+
+        double s = getSnapScaleY();
+
+        return value > 0 ? scaledFloor(value, s) : scaledCeil(value, s);
     }
 
     double getAreaBaselineOffset(List<Node> children, Callback<Node, Insets> margins,

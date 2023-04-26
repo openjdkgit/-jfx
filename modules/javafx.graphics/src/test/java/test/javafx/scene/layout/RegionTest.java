@@ -1264,20 +1264,20 @@ public class RegionTest {
         for (double scale : scales) {
             stage.setRenderScaleX(scale);
             for (int j = 0; j < 1000; j++) {
-                double value = new Random().nextDouble() * 100 - 50;
+                double value = new Random().nextDouble() * 100000;
                 double snappedValue = region.snapSizeX(value);
                 double snapOfSnappedValue = region.snapSizeX(snappedValue);
-                assertEquals(snappedValue, snapOfSnappedValue, 1.0e-14);
+                assertEquals(snappedValue, snapOfSnappedValue, 0.0);
             }
         }
 
         for (double scale : scales) {
             stage.setRenderScaleY(scale);
             for (int j = 0; j < 1000; j++) {
-                double value = new Random().nextDouble() * 100 - 50;
+                double value = new Random().nextDouble() * 100000;
                 double snappedValue = region.snapSizeY(value);
                 double snapOfSnappedValue = region.snapSizeY(snappedValue);
-                assertEquals(snappedValue, snapOfSnappedValue, 1.0e-14);
+                assertEquals(snappedValue, snapOfSnappedValue, 0.0);
             }
         }
 
