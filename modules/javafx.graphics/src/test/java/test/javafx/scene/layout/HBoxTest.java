@@ -29,6 +29,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Random;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -964,5 +966,44 @@ public class HBoxTest {
             assertEquals("config: " + config, config.expectedWidth, r1.getWidth() + r2.getWidth() + r3.getWidth(), 10e-14);
             stage.close();
         }
+    }
+
+    @Test
+    public void shouldAssignCorrectWidthsAtVariousRenderScales() {
+        Random rnd = new Random(1);
+        Stage stage = new Stage();
+        SimpleDoubleProperty renderScaleProperty = new SimpleDoubleProperty(1.0);
+
+        stage.renderScaleXProperty().bind(renderScaleProperty);
+        stage.renderScaleYProperty().bind(renderScaleProperty);
+        stage.show();
+
+        for (double renderScale : new double[] {0.5, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 4.0, 5.0, 4.0 / 3.0}) {
+            renderScaleProperty.set(renderScale);
+
+            for (int scenario = 0; scenario < 10000; scenario++) {
+                HBox hbox = new HBox();
+                int childCount = rnd.nextInt(50);
+                double expectedWidth = 0;
+
+                for(int i = 0; i < childCount; i++) {
+                    Region r = new Region();
+                    double w = rnd.nextInt(5000);
+
+                    r.setMinWidth(w);
+
+                    hbox.getChildren().add(r);
+
+                    expectedWidth += Math.ceil(w * renderScale) / renderScale;
+                }
+
+                stage.setScene(new Scene(new HBox(hbox)));
+
+                assertEquals(expectedWidth, hbox.getWidth(), 10e-8);
+                assertEquals(expectedWidth, hbox.getChildren().stream().map(Region.class::cast).mapToDouble(Region::getWidth).sum(), 10e-8);
+            }
+        }
+
+        stage.close();
     }
 }
