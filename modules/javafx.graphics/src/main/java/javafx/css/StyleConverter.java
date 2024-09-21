@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -249,9 +249,10 @@ public class StyleConverter<F, T> {
      * @return the target property type
      * @since 9
      */
-    public T convert(Map<CssMetaData<? extends Styleable, ?>,Object> convertedValues) {
-        return null;
-    }
+    // just to proof it is never used in this way
+//    public T convert(Map<CssMetaData<? extends Styleable, ?>,Object> convertedValues) {
+//        return null;
+//    }
 
     /**
      * Write binary data.
