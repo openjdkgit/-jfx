@@ -34,7 +34,6 @@
 #include "com_sun_prism_es2_X11GLDrawable.h"
 
 extern void initializeDrawableInfo(DrawableInfo *dInfo);
-extern void deleteDrawableInfo(DrawableInfo *dInfo);
 
 /*
  * Class:     com_sun_prism_es2_X11GLDrawable
@@ -48,6 +47,7 @@ JNIEXPORT jlong JNICALL Java_com_sun_prism_es2_X11GLDrawable_nCreateDrawable
     if (pfInfo == NULL) {
         return 0;
     }
+
     /* allocate the structure */
     dInfo = (DrawableInfo *) malloc(sizeof (DrawableInfo));
     if (dInfo == NULL) {
@@ -112,4 +112,19 @@ JNIEXPORT jboolean JNICALL Java_com_sun_prism_es2_X11GLDrawable_nSwapBuffers
     }
     glXSwapBuffers(dInfo->display, dInfo->win);
     return JNI_TRUE;
+}
+
+/*
+ * Class:     com_sun_prism_es2_X11GLDrawable
+ * Method:    nDestroyDrawable
+ * Signature: (J)V
+ */
+JNIEXPORT void JNICALL Java_com_sun_prism_es2_X11GLDrawable_nDestroyDrawable
+(JNIEnv *env, jclass class, jlong nativeDInfo) {
+    DrawableInfo *dInfo = (DrawableInfo *) jlong_to_ptr(nativeDInfo);
+    if (dInfo == NULL) {
+        return;
+    }
+
+    free(dInfo);
 }
